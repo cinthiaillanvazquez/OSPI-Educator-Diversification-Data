@@ -1,0 +1,103 @@
+---
+title: "First Plot Assignment"
+output:
+  html_document:
+    df_print: paged
+author: Cinthia Illan Vazquez and Devon Lombard Henley
+---
+
+```{r}
+#load libraries
+library(tidyverse)
+
+##ask if we can tidyverse package, or if he wants us to use just ggplot##
+```
+
+```{r}
+#load data from local and create tabular data frame 
+df <- read_csv("Data/TeacherDemographics_Summary.csv")
+```
+```{r}
+#Checking column names 
+names(df)
+
+#Checking data types 
+str(df,width = 70,strict.width='cut')
+
+#Convert "max teacher percent" to numerical value 
+#df$`Max. Teacher Percent` <- parse_number(df$`Max. Teacher Percent`)
+
+#check 
+#str(df,width = 70,strict.width='cut')
+```
+
+```{r}
+#Looking at rows
+head(df$`Max. Teacher Count`,20)
+
+#Identifying frequencies 
+absoluteT=table(df$`Max. Teacher Count`,
+                exclude = 'nothing')
+
+absoluteT
+#note that our data downloaded from OSPI is pre-aggregated data (not individual level data) so no need to identify missing values
+```
+
+```{r}
+#Filtering out gender rows 
+dfrace <- df[df$`Demographic Category Type`=="RaceEthnicity",]
+
+#Creating visual 
+base= ggplot(data = dfrace, 
+             aes(x = `Demographic Category`,
+                 y = `Max. Teacher Count`)) 
+
+plot1 = base + geom_bar(fill ="#b4cde3",
+                        stat = 'identity') 
+plot1= plot1 + theme(axis.text.x=element_text(angle = 45, hjust = 1), plot.background = element_rect(fill='white', colour = 'white'), panel.background = element_rect(fill='white', colour = 'white'))
+
+plot1
+
+#Adding title and source 
+titleText='Washington Educators Are Overwhelmingly White'
+sourceText='Source: Washington Office of Superindentent of Public Instruction 2020-2021 School Year (self reported data)'
+
+plot2 = plot1 + labs(title=titleText,
+                     x ='Race and Ethnicity', 
+                     y = 'Educator Count',
+                     caption = sourceText) 
+plot2
+
+#Customizing verticle axis 
+library(scales)
+plot3 = plot2 + scale_y_continuous(breaks=c(0,10000,20000,30000,40000,50000,60000),
+                                   limits = c(0, 65000), 
+                                   labels=unit_format(suffix = '', big.mark = ',')) 
+plot3
+
+#Center Title 
+plot4 = plot3 + theme(plot.caption = element_text(hjust = 0), 
+                      plot.title = element_text(hjust = 0.5))
+plot4
+
+#Labeling the bars
+LABELS=paste0(format(round(dfrace$`Max. Teacher Count`,2), big.mark = ','),'\n(',dfrace$`Max. Teacher Percent`, ')')
+
+plot5 = plot4 + geom_text(vjust=0, 
+                          size = 3,
+                          aes(y = `Max. Teacher Count` ,
+                              label = LABELS))
+plot5
+
+#Ordering the bars 
+dfrace=dfrace[order(dfrace$`Max. Teacher Count`),]
+
+DemographicCategoryOrd <- as.factor(dfrace[order(dfrace$`Max. Teacher Count`),]$`Demographic Category`)
+
+#Changing theme to classic 
+plot6= plot5 + scale_x_discrete(limits=DemographicCategoryOrd)
+
+plot6
+
+
+```
