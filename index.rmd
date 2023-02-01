@@ -47,6 +47,18 @@ absoluteT
 #Filtering out gender rows 
 dfrace <- df[df$`Demographic Category Type`=="RaceEthnicity",]
 
+#Changing independent variable names
+renamevar <- function(varname){
+  case_when(varname=='Native Hawaiian/Other Pacific Islander' ~ 'Pacific Islander',
+            varname=='American Indian/Alaskan Native' ~ 'Indigenous',
+            varname=='Black/African American' ~'Black',
+            varname=='Two or More Races' ~ 'Multiracial',
+            varname=='Hispanic/Latino of any race(s)' ~ 'Latinx',
+            TRUE ~ varname)
+}
+
+dfrace$`Demographic Category` <- sapply(dfrace$`Demographic Category`, FUN = renamevar)
+
 #Creating visual 
 base= ggplot(data = dfrace, 
              aes(x = `Demographic Category`,
@@ -81,7 +93,10 @@ plot4 = plot3 + theme(plot.caption = element_text(hjust = 0),
 plot4
 
 #Labeling the bars
-LABELS=paste0(format(round(dfrace$`Max. Teacher Count`,2), big.mark = ','),'\n(',dfrace$`Max. Teacher Percent`, ')')
+LABELS=dfrace$`Max. Teacher Percent`
+
+#Code for counts and percentage bar labels 
+#LABELS=paste0(format(round(dfrace$`Max. Teacher Count`,2), big.mark = ','),'\n(',dfrace$`Max. Teacher Percent`, ')')
 
 plot5 = plot4 + geom_text(vjust=0, 
                           size = 3,
