@@ -3,14 +3,12 @@ title: "First Plot Assignment"
 output:
   html_document:
     df_print: paged
-author: Cinthia Illan Vazquez and Devon Lombard Henley
+author: Cinthia Illan Vazquez and Devon Lombard-Henley
 ---
 
 ```{r}
 #load libraries
 library(tidyverse)
-
-##ask if we can tidyverse package, or if he wants us to use just ggplot##
 ```
 
 ```{r}
